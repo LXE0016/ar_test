@@ -1,20 +1,23 @@
-<a-scene
-  embedded
-  arjs="sourceType: webcam; videoTexture: true; detectionMode: mono_and_matrix;"
-  renderer="precision: mediump"
-  vr-mode-ui="enabled: false"
->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <a-marker preset="hiro" emitevents="true">
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
 
-    <a-entity
-      gltf-model="switch.glb"
-      scale="0.003 0.003 0.003"
-      position="0 0.1 0">
-    </a-entity>
+<body style="margin: 0; overflow: hidden;">
 
-  </a-marker>
+  <a-scene embedded arjs>
 
-  <a-entity camera></a-entity>
+    <a-marker preset="hiro">
+      <a-box position="0 0.5 0" color="red"></a-box>
+    </a-marker>
 
-</a-scene>
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+</body>
+</html>
