@@ -38,6 +38,25 @@
 </a-scene>
 
 <script>
+
+  const model = document.querySelector('#model');
+
+model.addEventListener('model-loaded', () => {
+  const mesh = model.getObject3D('mesh');
+  const box = new THREE.Box3().setFromObject(mesh);
+  const size = box.getSize(new THREE.Vector3());
+
+
+  const maxDim = Math.max(size.x, size.y, size.z);
+
+  let autoScale = 2.5 / maxDim;
+
+  autoScale = Math.max(1.5, Math.min(4, autoScale));
+
+  rotator.setAttribute('scale', `${autoScale} ${autoScale} ${autoScale}`);
+  scale = autoScale; 
+});
+  
 const rotator = document.querySelector('#rotator');
 
 const defaultRotation = {x:0, y:0, z:0};
@@ -52,6 +71,9 @@ function start(x,y){
   py = y;
 }
 
+let velocityX = 0;
+let velocityY = 0;
+
 function move(x,y){
   if(!isDragging) return;
 
@@ -60,6 +82,9 @@ function move(x,y){
 
   px = x;
   py = y;
+
+  velocityX = dx * 0.1;
+  velocityY = dy * 0.1;
 
   let r = rotator.getAttribute('rotation');
 
@@ -127,12 +152,32 @@ document.addEventListener('touchend', () => {
   startDist = 0;
 });
 
-
 document.addEventListener('dblclick', () => {
   rotator.setAttribute('rotation', defaultRotation);
   rotator.setAttribute('scale', '3 3 3');
   scale = 3;
 });
+
+  function animate(){
+  if(!isDragging){
+
+    let r = rotator.getAttribute('rotation');
+
+    r.y += velocityX;
+    r.x -= velocityY;
+
+    r.x = Math.max(-30, Math.min(30, r.x));
+
+    rotator.setAttribute('rotation', r);
+
+    velocityX *= 0.95;
+    velocityY *= 0.95;
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
 
 </script>
 
