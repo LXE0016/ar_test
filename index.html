@@ -3,29 +3,25 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body style="margin:0; overflow:hidden;">
 
-<a-scene 
-  background="color: #ECECEC" 
+<a-scene
+  embedded
   vr-mode-ui="enabled: false"
-  environment="preset: city"
+  renderer="logarithmicDepthBuffer: true;"
+  arjs="sourceType: webcam; debugUIEnabled: false;"
 >
 
   <a-camera 
     id="cam"
-    position="0 1.0 1.4"
-    rotation="-10 0 0"
+    position="0 0 0"
     look-controls="enabled: false">
   </a-camera>
 
-  <a-light type="ambient" intensity="0.6"></a-light>
-  <a-light type="directional" position="2 4 3" intensity="1.2"></a-light>
-  <a-light type="directional" position="-3 2 1" intensity="0.8"></a-light>
-  <a-light type="directional" position="0 3 -3" intensity="1"></a-light>
-
-  <a-entity id="rotator" position="0 0.7 0" rotation="0 0 0" scale="3 3 3">
+  <a-entity id="rotator" position="0 0 -1.5" rotation="0 0 0" scale="2 2 2">
 
     <a-entity
       id="model"
@@ -35,44 +31,43 @@
 
   </a-entity>
 
+  <a-light type="ambient" intensity="0.9"></a-light>
+  <a-light type="directional" position="1 2 1" intensity="1.2"></a-light>
+  <a-light type="directional" position="-1 1 -1" intensity="0.7"></a-light>
+
 </a-scene>
 
 <script>
+const rotator = document.querySelector('#rotator');
+const model = document.querySelector('#model');
 
-  const model = document.querySelector('#model');
+let scale = 2;
 
 model.addEventListener('model-loaded', () => {
   const mesh = model.getObject3D('mesh');
   const box = new THREE.Box3().setFromObject(mesh);
   const size = box.getSize(new THREE.Vector3());
 
-
   const maxDim = Math.max(size.x, size.y, size.z);
 
-  let autoScale = 2.5 / maxDim;
-
-  autoScale = Math.max(1.5, Math.min(4, autoScale));
+  let autoScale = 1.5 / maxDim;
+  autoScale = Math.max(0.8, Math.min(3, autoScale));
 
   rotator.setAttribute('scale', `${autoScale} ${autoScale} ${autoScale}`);
-  scale = autoScale; 
+  scale = autoScale;
 });
-  
-const rotator = document.querySelector('#rotator');
 
-const defaultRotation = {x:0, y:0, z:0};
-let scale = 3;
 
 let isDragging = false;
 let px = 0, py = 0;
+let velocityX = 0;
+let velocityY = 0;
 
 function start(x,y){
   isDragging = true;
   px = x;
   py = y;
 }
-
-let velocityX = 0;
-let velocityY = 0;
 
 function move(x,y){
   if(!isDragging) return;
@@ -116,10 +111,9 @@ document.addEventListener('touchmove', e => {
 document.addEventListener('touchend', end);
 
 
-
 document.addEventListener('wheel', e => {
   scale -= e.deltaY * 0.002;
-  scale = Math.max(1, Math.min(6, scale));
+  scale = Math.max(0.5, Math.min(4, scale));
 
   rotator.setAttribute('scale', `${scale} ${scale} ${scale}`);
 });
@@ -142,7 +136,7 @@ document.addEventListener('touchmove', e => {
     startDist = dist;
 
     scale += delta * 0.01;
-    scale = Math.max(1, Math.min(6, scale));
+    scale = Math.max(0.5, Math.min(4, scale));
 
     rotator.setAttribute('scale', `${scale} ${scale} ${scale}`);
   }
@@ -152,13 +146,8 @@ document.addEventListener('touchend', () => {
   startDist = 0;
 });
 
-document.addEventListener('dblclick', () => {
-  rotator.setAttribute('rotation', defaultRotation);
-  rotator.setAttribute('scale', '3 3 3');
-  scale = 3;
-});
 
-  function animate(){
+function animate(){
   if(!isDragging){
 
     let r = rotator.getAttribute('rotation');
