@@ -15,15 +15,18 @@
   <a-marker preset="hiro">
   <a-entity 
     gltf-model="switch.glb"
-    scale="0.5 0.5 0.5"
+    scale="0.05 0.05 0.05"
     position="0 0.5 0"
-    rotation="0 0 0">
+    rotation="0 180 0">
   </a-entity>
 </a-marker>
 
     <a-entity camera></a-entity>
 
-  </a-scene>
-
+<a-scene 
+  embedded 
+  arjs="sourceType: webcam;"
+  vr-mode-ui="enabled: false"
+>
 </body>
 </html>
