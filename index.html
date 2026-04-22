@@ -1,11 +1,11 @@
 <a-scene
   embedded
-  arjs="sourceType: webcam; videoTexture: true; displayWidth: 640; displayHeight: 480;"
+  arjs="sourceType: webcam; videoTexture: true; detectionMode: mono_and_matrix;"
   renderer="precision: mediump"
   vr-mode-ui="enabled: false"
 >
 
-  <a-marker preset="hiro">
+  <a-marker preset="hiro" emitevents="true">
 
     <a-entity
       gltf-model="switch.glb"
