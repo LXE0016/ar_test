@@ -18,8 +18,13 @@
   </a-camera>
 
 
-  <a-light type="ambient" intensity="1.5"></a-light>
-  <a-light type="directional" position="2 4 2"></a-light>
+<a-light type="ambient" intensity="0.6"></a-light>
+
+<a-light type="directional" position="2 4 3" intensity="1.2"></a-light>
+
+<a-light type="directional" position="-3 2 1" intensity="0.8"></a-light>
+
+<a-light type="directional" position="0 3 -3" intensity="1"></a-light>
 
 
   <a-entity id="rotator" position="0 0.7 0" rotation="0 0 0">
@@ -34,7 +39,10 @@
 
   </a-entity>
 
-</a-scene>
+<a-scene 
+  background="color: #ECECEC"
+  vr-mode-ui="enabled: false"
+  environment="preset: city">
 
 <script>
 const rotator = document.querySelector('#rotator');
