@@ -18,11 +18,15 @@
 
 <a-entity id="container" position="0 0.6 -1.5" rotation="0 0 0">
 
-  <a-entity
-    id="model"
-    gltf-model="switch.glb"
-    scale="1 1 1"
-    rotation="-90 180 0">
+  <a-entity id="pivot" position="0 -0.3 0">
+
+    <a-entity
+      id="model"
+      gltf-model="switch.glb"
+      scale="1 1 1"
+      rotation="90 180 0">
+    </a-entity>
+
   </a-entity>
 
 </a-entity>
@@ -30,72 +34,40 @@
   </a-scene>
 
 <script>
-  const container = document.querySelector('#container');
+const container = document.querySelector('#container');
 
-  let isDragging = false;
-  let previousX = 0;
-  let previousY = 0;
+let isDragging = false;
+let px = 0, py = 0;
 
-  document.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    previousX = e.clientX;
-    previousY = e.clientY;
-  });
+document.addEventListener('touchstart', e => {
+  isDragging = true;
+  px = e.touches[0].clientX;
+  py = e.touches[0].clientY;
+});
 
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
+document.addEventListener('touchend', () => {
+  isDragging = false;
+});
 
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
+document.addEventListener('touchmove', e => {
+  if (!isDragging) return;
 
-    let deltaX = e.clientX - previousX;
-    let deltaY = e.clientY - previousY;
+  let dx = e.touches[0].clientX - px;
+  let dy = e.touches[0].clientY - py;
 
-    previousX = e.clientX;
-    previousY = e.clientY;
+  px = e.touches[0].clientX;
+  py = e.touches[0].clientY;
 
-    let rotation = container.getAttribute('rotation');
+  let r = container.getAttribute('rotation');
 
-    // 左右旋轉（Y）
-    rotation.y += deltaX * 0.5;
+  r.y += dx * 0.5;
+  r.x -= dy * 0.3;
 
-    // 上下微調（X），限制範圍避免翻倒
-    rotation.x -= deltaY * 0.3;
-    rotation.x = Math.max(-30, Math.min(30, rotation.x));
+  r.x = Math.max(-30, Math.min(30, r.x));
 
-    container.setAttribute('rotation', rotation);
-  });
-
-  // 手機觸控
-  document.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    previousX = e.touches[0].clientX;
-    previousY = e.touches[0].clientY;
-  });
-
-  document.addEventListener('touchend', () => {
-    isDragging = false;
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-
-    let deltaX = e.touches[0].clientX - previousX;
-    let deltaY = e.touches[0].clientY - previousY;
-
-    previousX = e.touches[0].clientX;
-    previousY = e.touches[0].clientY;
-
-    let rotation = container.getAttribute('rotation');
-
-    rotation.y += deltaX * 0.5;
-    rotation.x -= deltaY * 0.3;
-    rotation.x = Math.max(-30, Math.min(30, rotation.x));
-
-    container.setAttribute('rotation', rotation);
-  });
+  container.setAttribute('rotation', r);
+});
 </script>
-
+  
 </body>
 </html>
