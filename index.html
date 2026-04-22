@@ -9,17 +9,20 @@
 
 <a-scene background="color: #ECECEC" vr-mode-ui="enabled: false">
 
-  <a-camera position="0 1.2 2"></a-camera>
+
+  <a-camera position="0 1.2 2" look-controls="enabled: false"></a-camera>
+
 
   <a-light type="ambient" intensity="1.5"></a-light>
-  <a-light type="directional" position="2 4 2" intensity="1"></a-light>
+  <a-light type="directional" position="2 4 2"></a-light>
 
-  <a-entity id="container" position="0 1 -1.5" rotation="0 0 0">
 
+  <a-entity id="rotator" position="0 1 0" rotation="0 0 0">
 
     <a-entity
       id="model"
       gltf-model="switch.glb"
+      position="0 0 0"
       scale="2 2 2"
       rotation="90 180 0">
     </a-entity>
@@ -29,52 +32,67 @@
 </a-scene>
 
 <script>
-const container = document.querySelector('#container');
+const rotator = document.querySelector('#rotator');
 
 let isDragging = false;
-let px = 0;
-let py = 0;
+let startX = 0, startY = 0;
 
-
-function start(x, y){
+document.addEventListener('mousedown', e => {
   isDragging = true;
-  px = x;
-  py = y;
-}
+  startX = e.clientX;
+  startY = e.clientY;
+});
 
-function move(x, y){
-  if(!isDragging) return;
+document.addEventListener('mouseup', () => isDragging = false);
 
-  let dx = x - px;
-  let dy = y - py;
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
 
-  px = x;
-  py = y;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
 
-  let r = container.getAttribute('rotation');
+  startX = e.clientX;
+  startY = e.clientY;
 
-  r.y += dx * 0.4;
-
-
-  r.x -= dy * 0.2;
-  r.x = Math.max(-20, Math.min(20, r.x));
-
-  container.setAttribute('rotation', r);
-}
-
-function end(){
-  isDragging = false;
-}
+  let r = rotator.getAttribute('rotation');
 
 
-document.addEventListener('mousedown', e => start(e.clientX, e.clientY));
-document.addEventListener('mousemove', e => move(e.clientX, e.clientY));
-document.addEventListener('mouseup', end);
+  r.y += dx * 0.5;
+  r.x -= dy * 0.3;
 
-document.addEventListener('touchstart', e => start(e.touches[0].clientX, e.touches[0].clientY));
-document.addEventListener('touchmove', e => move(e.touches[0].clientX, e.touches[0].clientY));
-document.addEventListener('touchend', end);
 
+  r.x = Math.max(-30, Math.min(30, r.x));
+
+  rotator.setAttribute('rotation', r);
+});
+
+
+document.addEventListener('touchstart', e => {
+  isDragging = true;
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', () => isDragging = false);
+
+document.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+
+  const dx = e.touches[0].clientX - startX;
+  const dy = e.touches[0].clientY - startY;
+
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+
+  let r = rotator.getAttribute('rotation');
+
+  r.y += dx * 0.5;
+  r.x -= dy * 0.3;
+
+  r.x = Math.max(-30, Math.min(30, r.x));
+
+  rotator.setAttribute('rotation', r);
+});
 </script>
 
 </body>
