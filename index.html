@@ -7,51 +7,41 @@
 
 <body style="margin:0; overflow:hidden;">
 
-<a-scene background="color: #ECECEC" vr-mode-ui="enabled: false">
+<a-scene 
+  background="color: #ECECEC" 
+  vr-mode-ui="enabled: false"
+  environment="preset: city"
+>
 
+  <a-camera 
+    id="cam"
+    position="0 1.0 1.4"
+    rotation="-10 0 0"
+    look-controls="enabled: false">
+  </a-camera>
 
- <a-camera 
-  id="cam"
-  position="0 1.0 1.4"
-  rotation="-10 0 0"
-  look-controls="enabled: false">
-</a-camera>
+  <a-light type="ambient" intensity="0.6"></a-light>
+  <a-light type="directional" position="2 4 3" intensity="1.2"></a-light>
+  <a-light type="directional" position="-3 2 1" intensity="0.8"></a-light>
+  <a-light type="directional" position="0 3 -3" intensity="1"></a-light>
 
+  <a-entity id="rotator" position="0 0.7 0" rotation="0 0 0" scale="3 3 3">
 
-<a-light type="ambient" intensity="0.6"></a-light>
-
-<a-light type="directional" position="2 4 3" intensity="1.2"></a-light>
-
-<a-light type="directional" position="-3 2 1" intensity="0.8"></a-light>
-
-<a-light type="directional" position="0 3 -3" intensity="1"></a-light>
-
-
-  <a-entity id="rotator" position="0 0.7 0" rotation="0 0 0">
-
- 
     <a-entity
       id="model"
       gltf-model="switch.glb"
-      scale="3 3 3"
       rotation="90 0 0">
     </a-entity>
 
   </a-entity>
 
-<a-scene 
-  background="color: #ECECEC"
-  vr-mode-ui="enabled: false"
-  environment="preset: city">
+</a-scene>
 
 <script>
 const rotator = document.querySelector('#rotator');
-const cam = document.querySelector('#cam');
-
 
 const defaultRotation = {x:0, y:0, z:0};
-const defaultCamZ = 1.4;
-
+let scale = 3;
 
 let isDragging = false;
 let px = 0, py = 0;
@@ -75,7 +65,6 @@ function move(x,y){
 
   r.y += dx * 0.5;
   r.x -= dy * 0.3;
-
   r.x = Math.max(-30, Math.min(30, r.x));
 
   rotator.setAttribute('rotation', r);
@@ -85,11 +74,9 @@ function end(){
   isDragging = false;
 }
 
-
 document.addEventListener('mousedown', e => start(e.clientX, e.clientY));
 document.addEventListener('mousemove', e => move(e.clientX, e.clientY));
 document.addEventListener('mouseup', end);
-
 
 document.addEventListener('touchstart', e => {
   if(e.touches.length === 1){
@@ -104,16 +91,13 @@ document.addEventListener('touchmove', e => {
 document.addEventListener('touchend', end);
 
 
+
 document.addEventListener('wheel', e => {
-  let pos = cam.getAttribute('position');
+  scale -= e.deltaY * 0.002;
+  scale = Math.max(1, Math.min(6, scale));
 
-  pos.z += e.deltaY * 0.002;
-  pos.z = Math.max(0.8, Math.min(3, pos.z));
-
-  cam.setAttribute('position', pos);
+  rotator.setAttribute('scale', `${scale} ${scale} ${scale}`);
 });
-
-  
 
 let startDist = 0;
 
@@ -132,12 +116,10 @@ document.addEventListener('touchmove', e => {
     let delta = dist - startDist;
     startDist = dist;
 
-    let pos = cam.getAttribute('position');
+    scale += delta * 0.01;
+    scale = Math.max(1, Math.min(6, scale));
 
-    pos.z -= delta * 0.01;
-    pos.z = Math.max(0.8, Math.min(3, pos.z));
-
-    cam.setAttribute('position', pos);
+    rotator.setAttribute('scale', `${scale} ${scale} ${scale}`);
   }
 });
 
@@ -146,16 +128,10 @@ document.addEventListener('touchend', () => {
 });
 
 
-
 document.addEventListener('dblclick', () => {
-
-
   rotator.setAttribute('rotation', defaultRotation);
-
-
-  let pos = cam.getAttribute('position');
-  pos.z = defaultCamZ;
-  cam.setAttribute('position', pos);
+  rotator.setAttribute('scale', '3 3 3');
+  scale = 3;
 });
 
 </script>
