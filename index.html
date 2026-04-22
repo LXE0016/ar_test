@@ -11,22 +11,19 @@
 
   <a-scene background="color: #ECECEC" vr-mode-ui="enabled: false">
 
-    <!-- 燈光 -->
     <a-light type="ambient" intensity="1"></a-light>
     <a-light type="directional" position="2 4 2" intensity="1"></a-light>
 
-    <!-- 相機（拉近） -->
     <a-camera position="0 1 1.5"></a-camera>
 
-    <!-- 模型（直接放在鏡頭前） -->
-    <a-entity
-      id="model"
-      gltf-model="switch.glb"
-      position="0 0.8 -1"
-      scale="2 2 2"
-      rotation="0 180 0">
-    </a-entity>
-
+   <a-entity
+    id="model"
+    gltf-model="switch.glb"
+    position="0 0.6 -1.5"
+    scale="1 1 1"
+    rotation="0 180 0">
+  </a-entity>
+  
   </a-scene>
 
   <script>
@@ -36,7 +33,6 @@
     let previousX = 0;
     let scale = 2;
 
-    // 👉 滑動旋轉
     document.addEventListener('mousedown', (e) => {
       isDragging = true;
       previousX = e.clientX;
@@ -56,7 +52,6 @@
       model.setAttribute('rotation', rotation);
     });
 
-    // 👉 手機旋轉
     document.addEventListener('touchstart', (e) => {
       isDragging = true;
       previousX = e.touches[0].clientX;
@@ -76,14 +71,12 @@
       model.setAttribute('rotation', rotation);
     });
 
-    // 👉 滾輪縮放（電腦）
     document.addEventListener('wheel', (e) => {
       scale += e.deltaY * -0.001;
       scale = Math.min(Math.max(0.5, scale), 5);
       model.setAttribute('scale', `${scale} ${scale} ${scale}`);
     });
 
-    // 👉 手機雙指縮放
     let initialDistance = null;
 
     document.addEventListener('touchmove', (e) => {
