@@ -16,29 +16,30 @@
 
     <a-camera position="0 1.2 0"></a-camera>
 
-<a-entity id="container" position="0 0.6 -1.5">
+<a-entity id="container" position="0 0.6 -1.5" rotation="0 0 0">
 
   <a-entity
     id="model"
     gltf-model="switch.glb"
     scale="1 1 1"
-    rotation="-90 0 0">
+    rotation="-90 180 0">
   </a-entity>
 
 </a-entity>
   
   </a-scene>
 
- <script>
+<script>
   const container = document.querySelector('#container');
 
   let isDragging = false;
   let previousX = 0;
+  let previousY = 0;
 
-  // 滑鼠
   document.addEventListener('mousedown', (e) => {
     isDragging = true;
     previousX = e.clientX;
+    previousY = e.clientY;
   });
 
   document.addEventListener('mouseup', () => {
@@ -48,21 +49,29 @@
   document.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
 
-    let delta = e.clientX - previousX;
+    let deltaX = e.clientX - previousX;
+    let deltaY = e.clientY - previousY;
+
     previousX = e.clientX;
+    previousY = e.clientY;
 
     let rotation = container.getAttribute('rotation');
 
-    // 🔥 只轉 Y（左右）
-    rotation.y += delta * 0.5;
+    // 左右旋轉（Y）
+    rotation.y += deltaX * 0.5;
+
+    // 上下微調（X），限制範圍避免翻倒
+    rotation.x -= deltaY * 0.3;
+    rotation.x = Math.max(-30, Math.min(30, rotation.x));
 
     container.setAttribute('rotation', rotation);
   });
 
-  // 手機
+  // 手機觸控
   document.addEventListener('touchstart', (e) => {
     isDragging = true;
     previousX = e.touches[0].clientX;
+    previousY = e.touches[0].clientY;
   });
 
   document.addEventListener('touchend', () => {
@@ -72,13 +81,17 @@
   document.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
 
-    let delta = e.touches[0].clientX - previousX;
+    let deltaX = e.touches[0].clientX - previousX;
+    let deltaY = e.touches[0].clientY - previousY;
+
     previousX = e.touches[0].clientX;
+    previousY = e.touches[0].clientY;
 
     let rotation = container.getAttribute('rotation');
 
-    // 🔥 只轉 Y（左右）
-    rotation.y += delta * 0.5;
+    rotation.y += deltaX * 0.5;
+    rotation.x -= deltaY * 0.3;
+    rotation.x = Math.max(-30, Math.min(30, rotation.x));
 
     container.setAttribute('rotation', rotation);
   });
