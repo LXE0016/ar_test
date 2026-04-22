@@ -3,38 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 </head>
 
 <body style="margin:0; overflow:hidden;">
 
-  <a-scene background="color: #ECECEC" vr-mode-ui="enabled: false">
+<a-scene background="color: #ECECEC" vr-mode-ui="enabled: false">
 
-    <a-light type="ambient" intensity="1"></a-light>
-    <a-light type="directional" position="2 4 2" intensity="1"></a-light>
+  <a-camera id="cam" position="0 1.2 2"></a-camera>
 
-    <a-camera position="0 1.2 0"></a-camera>
 
-<a-entity id="container" position="0 0.6 -1.5" rotation="0 0 0">
+  <a-light type="ambient" intensity="1"></a-light>
+  <a-light type="directional" position="2 4 2"></a-light>
 
-  <a-entity id="pivot" position="0 -0.3 0">
+  <a-entity id="container" position="0 1 0">
 
-    <a-entity
-      id="model"
-      gltf-model="switch.glb"
-      scale="1 1 1"
-      rotation="90 180 0">
+    <a-entity id="pivot">
+
+      <a-entity
+        id="model"
+        gltf-model="switch.glb"
+        scale="1 1 1"
+        rotation="0 180 180">
+      </a-entity>
+
     </a-entity>
 
   </a-entity>
 
-</a-entity>
-  
-  </a-scene>
+</a-scene>
 
 <script>
 const container = document.querySelector('#container');
+const pivot = document.querySelector('#pivot');
+const model = document.querySelector('#model');
+
+
+model.addEventListener('model-loaded', () => {
+  const mesh = model.getObject3D('mesh');
+  const box = new THREE.Box3().setFromObject(mesh);
+  const center = box.getCenter(new THREE.Vector3());
+
+  pivot.object3D.position.set(-center.x, -center.y, -center.z);
+});
+
 
 let isDragging = false;
 let px = 0, py = 0;
@@ -68,6 +80,6 @@ document.addEventListener('touchmove', e => {
   container.setAttribute('rotation', r);
 });
 </script>
-  
+
 </body>
 </html>
