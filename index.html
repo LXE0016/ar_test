@@ -10,7 +10,7 @@
 <a-scene
   vr-mode-ui="enabled: false"
   renderer="colorManagement: true;"
-  xrweb="mode: ar"
+  webxr="requiredFeatures: hit-test"
 >
 
   <a-camera position="0 1.6 0"></a-camera>
@@ -45,18 +45,20 @@ let hitTestSource = null;
 let viewerSpace = null;
 let refSpace = null;
 
-scene.renderer.xr.addEventListener('sessionstart', async () => {
-  const session = scene.renderer.xr.getSession();
+scene.addEventListener('enter-vr', async () => {
 
-  refSpace = await session.requestReferenceSpace('local');
+  const xr = scene.renderer.xr;
+  const session = xr.getSession();
+
   viewerSpace = await session.requestReferenceSpace('viewer');
+  refSpace = await session.requestReferenceSpace('local');
 
   hitTestSource = await session.requestHitTestSource({
     space: viewerSpace
   });
 });
 
-scene.renderer.setAnimationLoop((timestamp, frame) => {
+scene.renderer.setAnimationLoop((t, frame) => {
   if (!frame || !hitTestSource) return;
 
   const hitTestResults = frame.getHitTestResults(hitTestSource);
@@ -66,11 +68,11 @@ scene.renderer.setAnimationLoop((timestamp, frame) => {
     const pose = hit.getPose(refSpace);
 
     reticle.setAttribute('visible', true);
-    reticle.object3D.matrix.fromArray(pose.transform.matrix);
-    reticle.object3D.matrix.decompose(
-      reticle.object3D.position,
-      reticle.object3D.quaternion,
-      reticle.object3D.scale
+
+    reticle.object3D.position.set(
+      pose.transform.position.x,
+      pose.transform.position.y,
+      pose.transform.position.z
     );
   }
 });
@@ -79,7 +81,6 @@ window.addEventListener('click', () => {
   if (!reticle.getAttribute('visible')) return;
 
   model.setAttribute('visible', true);
-
   model.object3D.position.copy(reticle.object3D.position);
 });
 </script>
